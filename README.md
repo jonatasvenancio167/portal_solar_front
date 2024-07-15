@@ -14,8 +14,9 @@ Este projeto é o frontend para o Portal Solar, uma aplicação React que consom
 <li>Axios</li>
 <li>React Hook Form</li>
 <li>TailwindCSS</li>
-<li>Pré-requisitos</li>
 </ul>
+
+<h2>Pré-requisitos</h2>
 
 <p>Certifique-se de que a API do Portal Solar está rodando antes de iniciar o frontend.</p>
 
