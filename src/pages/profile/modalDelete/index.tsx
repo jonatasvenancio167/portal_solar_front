@@ -1,14 +1,24 @@
+import { useNavigate } from "react-router-dom";
 import { Modal } from "../../../components/modal"
 import api from "../../../services/api"
+import { useToast } from "../../../hooks/useToast";
 
 interface ModalDeleteProps {
   setOpenModalDelete: (value: boolean) => void
 }
 
 const ModalDelete = ({ setOpenModalDelete }: ModalDeleteProps) => {
+  const { notify } = useToast()
+  const navigate = useNavigate();
   const getDelete = async () => {
     try {
       await api.delete('/clients')
+
+      navigate('/login')
+      notify({
+        message: 'Conta excluida com sucesso!',
+        types: 'success'
+      })
     } catch (error) {
       console.log(error)
     }
