@@ -9,7 +9,7 @@ interface SignInCredentials {
 interface AuthContextState {
   status: boolean;
   signIn(credentials: SignInCredentials): Promise<void>;
-  //signOut(): void;
+  signOut(): void;
 }
 
 interface AuthStateRequest {
@@ -27,11 +27,11 @@ const AuthProvider = ({ children }: Props) => {
   const [status, setStatus] = useState(false);
 
   const signIn = useCallback(async ({ email, password  }: SignInCredentials) => {
-    const session_id = document.cookie.includes('session_id');
+    const session_id = document.cookie.includes('_interslice_session') && document.cookie.includes('_session_id');
 
     if (session_id) {
       setStatus(true);
-      return;
+      window.location.href = '/'
     }
     
     const response = await api.post<AuthStateRequest>('clients/sign_in', {
@@ -46,15 +46,14 @@ const AuthProvider = ({ children }: Props) => {
     }
   }, []);
 
-  // const signOut = useCallback(() => {
-  //   localStorage.removeItem(keyStorageToken);
-  //   localStorage.removeItem(keyStorage);
-
-  //   setData({} as AuthState);
-  // }, []);
+  const signOut = useCallback(() => {
+    document.cookie = `_interslice_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    document.cookie = `_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    window.location.href = '/'
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ status: status, signIn }}>
+    <AuthContext.Provider value={{ status: status, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
