@@ -4,11 +4,12 @@ import { useState } from "react";
 import api from "../../services/api";
 import { useToast } from '../../hooks/useToast';
 import { zodResolver } from '@hookform/resolvers/zod'
-import { BeatLoader } from "react-spinners";
 import { RegisterSchema } from "../../validations/register";
 import { z } from "zod";
+import { useNavigate } from "react-router-dom";
 
 export interface HandleRegisterProps {
+  name: string
   email: string
   password: string
   confirmPassword: string
@@ -19,17 +20,19 @@ type RegisterData = z.infer<typeof RegisterSchema>
 const Register = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const { notify } = useToast()
+  const navigate = useNavigate();
 
   const methods = useForm<RegisterData>({
     resolver: zodResolver(RegisterSchema)
   })
 
-  const handleRegister = async ({ email, password, confirmPassword }: HandleRegisterProps) => {
+  const handleRegister = async ({ name, email, password, confirmPassword }: HandleRegisterProps) => {
     try {
       setIsLoading(true)
 
       await api.post('clients', {
         client: {
+          name,
           email,
           password,
           password_confirmation: confirmPassword
@@ -38,6 +41,7 @@ const Register = () => {
 
       setIsLoading(false)
 
+      navigate('/login')
       notify({
         message: 'Registro criado com sucesso!',
         types: 'success'
@@ -64,6 +68,15 @@ const Register = () => {
     <Card>
       <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <h3 className="text-xl font-medium text-white">Faça login em nossa plataforma</h3>
+          <div>
+            <label className="text-sm font-medium text-white block mb-2 ">Seu Nome</label>
+            <input 
+              type="text" 
+              className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white dark:white"
+               placeholder="name@company.com" 
+              {...register('name', { required: errors.name?.message })}
+            />
+          </div>
           <div>
             <label className="text-sm font-medium text-white block mb-2 ">Seu email</label>
             <input 
